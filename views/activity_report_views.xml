@@ -1,0 +1,131 @@
+<odoo>
+
+    <!-- ================================================= -->
+    <!-- VUE LISTE : RAPPORTS -->
+    <!-- ================================================= -->
+    <record id="view_activity_weekly_report_list" model="ir.ui.view">
+        <field name="name">activity.weekly.report.list</field>
+        <field name="model">activity.weekly.report</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="department_id"/>
+                <field name="direction_id"/>
+                <field name="week_start"/>
+                <field name="week_end"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ================================================= -->
+    <!-- VUE FORMULAIRE : RAPPORT -->
+    <!-- ================================================= -->
+    <record id="view_activity_weekly_report_form" model="ir.ui.view">
+        <field name="name">activity.weekly.report.form</field>
+        <field name="model">activity.weekly.report</field>
+        <field name="arch" type="xml">
+
+            <form string="Rapport d’activité">
+
+                <!-- ================= HEADER ================= -->
+                <header>
+
+                    <button name="action_submit"
+                            string="Soumettre"
+                            type="object"
+                            class="btn-primary"
+                            modifiers="{'invisible': [['state', '!=', 'draft']]}"/>
+
+                    <button name="action_validate"
+                            string="Valider"
+                            type="object"
+                            class="btn-success"
+                            groups="activity_weekly_report.group_activity_report_admin"
+                            modifiers="{'invisible': [['state', '!=', 'submitted']]}"/>
+
+                    <button name="action_reject"
+                            string="Rejeter"
+                            type="object"
+                            class="btn-danger"
+                            groups="activity_weekly_report.group_activity_report_admin"
+                            modifiers="{'invisible': [['state', '!=', 'submitted']]}"/>
+
+                    <field name="state"
+                           widget="statusbar"
+                           statusbar_visible="draft,submitted,validated,rejected"/>
+                </header>
+
+                <sheet>
+
+                    <!-- ================= INFOS GÉNÉRALES ================= -->
+                    <group>
+                        <group>
+                            <field name="department_id"
+                                   modifiers="{'readonly': [['state', '!=', 'draft']]}"/>
+                            <field name="direction_id" readonly="1"/>
+                            <field name="employee_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="week_start"
+                                   modifiers="{'readonly': [['state', '!=', 'draft']]}"/>
+                            <field name="week_end"
+                                   modifiers="{'readonly': [['state', '!=', 'draft']]}"/>
+                            <field name="year" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <!-- ================= ONGLETS ================= -->
+                    <notebook>
+
+                        <!-- ================= ACTIVITÉS ================= -->
+                        <page string="Activités réalisées">
+
+                            <field name="line_ids">
+
+                                <list editable="bottom">
+
+                                    <field name="name"/>
+                                    <field name="date_start"/>
+                                    <field name="date_end"/>
+                                    <field name="status"/>
+                                    <field name="priority"/>
+
+                                    <!-- % RÉALISATION : ICI LA BONNE LOGIQUE -->
+                                    <field name="progress"
+                                           widget="progressbar"
+                                           modifiers="{'readonly': [['report_id.state', 'not in', ['draft','rejected']]]}"/>
+
+                                    <field name="duration"/>
+
+                                </list>
+                            </field>
+                        </page>
+
+                        <!-- ================= POINTS BLOQUANTS ================= -->
+                        <page string="Points bloquants">
+                            <group>
+                                <field name="blocking_points"
+                                       modifiers="{'readonly': [['state', 'not in', ['draft','rejected']]]}"/>
+                                <field name="arbitration_required"
+                                       modifiers="{'readonly': [['state', 'not in', ['draft','rejected']]]}"/>
+                            </group>
+                        </page>
+
+                        <!-- ================= ACTIONS CORRECTIVES ================= -->
+                        <page string="Actions corrective">
+                            <field name="corrective_actions"
+                                   nolabel="1"
+                                   modifiers="{'readonly': [['state', 'not in', ['draft','rejected']]]}"/>
+                        </page>
+
+                    </notebook>
+                </sheet>
+
+                <chatter/>
+
+            </form>
+        </field>
+    </record>
+
+</odoo>

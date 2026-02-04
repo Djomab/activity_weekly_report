@@ -1,0 +1,92 @@
+# =========================================
+# ODOO / PYTHON
+# =========================================
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.env/
+.envrc/
+
+# Odoo compiled files
+*.mo
+*.pot
+
+# =========================================
+# ODOO LOCAL FILES
+# =========================================
+
+# Local Odoo configuration
+odoo.conf
+*.conf
+
+# Local filestore (JAMAIS versionner)
+filestore/
+.sessions/
+
+# Logs
+*.log
+log/
+
+# =========================================
+# DATABASE / BACKUPS
+# =========================================
+
+*.dump
+*.sql
+*.zip
+*.tar
+*.tar.gz
+
+# =========================================
+# IDE / EDITORS
+# =========================================
+
+# VS Code
+.vscode/
+
+# PyCharm / IntelliJ
+.idea/
+
+# Sublime / Atom
+*.sublime-project
+*.sublime-workspace
+
+# =========================================
+# OS FILES
+# =========================================
+
+# Linux
+*~
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# =========================================
+# NODE / FRONTEND (si présent)
+# =========================================
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================================
+# ODOO SH SPECIFIC
+# =========================================
+
+# Build artifacts
+.coverage
+.cache/
+
+# Test outputs
+test-results/

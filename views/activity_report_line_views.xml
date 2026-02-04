@@ -1,0 +1,17 @@
+<odoo>
+    <record id="view_activity_weekly_report_line_list" model="ir.ui.view">
+        <field name="name">activity.weekly.report.line.list</field>
+        <field name="model">activity.weekly.report.line</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="report_id"/>
+                <field name="name"/>
+                <field name="status"/>
+                <field name="priority"/>
+                <field name="progress" widget="progressbar"
+                       modifiers="{'readonly': [['report_id.state', 'not in', ['draft','rejected']]]}"/>
+
+            </list>
+        </field>
+    </record>
+</odoo>

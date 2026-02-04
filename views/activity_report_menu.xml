@@ -1,0 +1,48 @@
+<odoo>
+
+    <!-- ACTIONS -->
+    <record id="action_my_activity_reports" model="ir.actions.act_window">
+        <field name="name">Mes rapports</field>
+        <field name="res_model">activity.weekly.report</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('user_id','=',uid)]</field>
+    </record>
+
+    <record id="action_direction_activity_reports" model="ir.actions.act_window">
+        <field name="name">Rapports de ma direction</field>
+        <field name="res_model">activity.weekly.report</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_all_activity_reports" model="ir.actions.act_window">
+        <field name="name">Tous les rapports</field>
+        <field name="res_model">activity.weekly.report</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- MENUS -->
+    <menuitem id="menu_activity_root"
+              name="Rapports d'activité"
+              sequence="10"/>
+
+    <menuitem id="menu_my_reports"
+              name="Mes rapports"
+              parent="menu_activity_root"
+              action="action_my_activity_reports"
+              sequence="10"/>
+
+    <menuitem id="menu_direction_reports"
+              name="Rapports de ma direction"
+              parent="menu_activity_root"
+              action="action_direction_activity_reports"
+              groups="activity_weekly_report.group_activity_report_manager"
+              sequence="20"/>
+
+    <menuitem id="menu_all_reports"
+              name="Tous les rapports"
+              parent="menu_activity_root"
+              action="action_all_activity_reports"
+              groups="activity_weekly_report.group_activity_report_admin"
+              sequence="30"/>
+
+</odoo>

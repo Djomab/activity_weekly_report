@@ -1,0 +1,22 @@
+<odoo>
+    <record id="module_category_activity" model="ir.module.category">
+        <field name="name">Activités</field>
+        <field name="description">Gestion des rapports d’activité</field>
+        <field name="sequence">25</field>
+    </record>
+    <record id="group_activity_report_user" model="res.groups">
+        <field name="name">Chef de service</field>
+        <field name="category_id" ref="activity_weekly_report.module_category_activity"/>
+    </record>
+
+    <record id="group_activity_report_manager" model="res.groups">
+        <field name="name">Directeur</field>
+        <field name="category_id" ref="activity_weekly_report.module_category_activity"/>
+    </record>
+
+    <record id="group_activity_report_admin" model="res.groups">
+        <field name="name">DG / Administrateur</field>
+        <field name="category_id" ref="activity_weekly_report.module_category_activity"/>
+    </record>
+
+</odoo>

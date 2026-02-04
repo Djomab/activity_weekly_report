@@ -1,0 +1,23 @@
+<odoo>
+
+    <!-- Chef de service : ses rapports -->
+    <record id="rule_activity_report_user" model="ir.rule">
+        <field name="name">Rapports - Chef de service</field>
+        <field name="model_id" ref="model_activity_weekly_report"/>
+        <field name="groups" eval="[(4, ref('group_activity_report_user'))]"/>
+        <field name="domain_force">
+            [('user_id', '=', user.id)]
+        </field>
+    </record>
+
+    <!-- Directeur : rapports des services de sa direction -->
+    <record id="rule_activity_report_manager" model="ir.rule">
+        <field name="name">Rapports - Directeur</field>
+        <field name="model_id" ref="model_activity_weekly_report"/>
+        <field name="groups" eval="[(4, ref('group_activity_report_manager'))]"/>
+        <field name="domain_force">
+            [('department_id.parent_id.manager_id.user_id', '=', user.id)]
+        </field>
+    </record>
+
+</odoo>
