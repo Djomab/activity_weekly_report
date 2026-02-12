@@ -1,0 +1,41 @@
+<odoo>
+    <record id="mail_template_activity_report_submitted" model="mail.template">
+        <field name="name">Rapport d’activité – Soumis</field>
+        <field name="model_id" ref="model_activity_weekly_report"/>
+        <field name="subject">
+            Rapport soumis – ${object.department_id.name}
+        </field>
+        <field name="email_from">
+            ${user.email or ''}
+        </field>
+        <field name="email_to">
+            ${object.direction_id.manager_id.user_id.email or ''}
+        </field>
+        <field name="body_html">
+            <![CDATA[
+            <p>Bonjour,</p>
+
+            <p>Le rapport d’activité hebdomadaire du service
+            <strong>${object.department_id.name}</strong>
+            a été soumis.</p>
+
+            <p>Semaine :
+            ${object.week_start} → ${object.week_end}</p>
+
+            <p>
+                <a href="${object.get_base_url()}/web#id=${object.id}&model=activity.weekly.report&view_type=form">
+                    Consulter le rapport
+                </a>
+            </p>
+
+            % if object.arbitration_required:
+                <p style="color:red;">
+                    ⚠️ Ce rapport nécessite un arbitrage DG.
+                </p>
+            % endif
+
+            <p>Cordialement.</p>
+            ]]>
+        </field>
+    </record>
+</odoo>

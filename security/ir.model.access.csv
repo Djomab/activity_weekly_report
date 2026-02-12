@@ -5,3 +5,6 @@ access_activity_report_admin,activity.report.admin,model_activity_weekly_report,
 
 access_activity_report_line_user,activity.report.line.user,model_activity_weekly_report_line,group_activity_report_user,1,1,1,0
 access_activity_report_line_admin,activity.report.line.admin,model_activity_weekly_report_line,group_activity_report_admin,1,1,1,1
+access_activity_report_line_manager,activity.report.line.manager,model_activity_weekly_report_line,group_activity_report_manager,1,0,0,0
+
+access_activity_report_reject_wizard_admin,activity.report.reject.wizard.admin,model_activity_report_reject_wizard,group_activity_report_admin,1,1,1,1
