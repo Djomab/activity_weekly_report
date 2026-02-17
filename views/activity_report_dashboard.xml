@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================= -->
+    <!-- ACTION ARBITRAGE DG -->
+    <!-- ============================= -->
+    <record id="action_activity_report_arbitrage" model="ir.actions.act_window">
+        <field name="name">Arbitrages en attente</field>
+        <field name="res_model">activity.weekly.report</field>
+        <field name="view_mode">list,form,graph,pivot</field>
+        <field name="domain">
+            [('state','=','submitted'),
+             ('arbitration_required','=',True)]
+        </field>
+    </record>
+
+
+    <!-- ============================= -->
+    <!-- GRAPH KPI DG -->
+    <!-- ============================= -->
+    <record id="view_activity_report_graph_dg" model="ir.ui.view">
+        <field name="name">activity.weekly.report.graph.dg</field>
+        <field name="model">activity.weekly.report</field>
+        <field name="arch" type="xml">
+            <graph string="Analyse DG" type="bar">
+                <field name="department_id"/>
+                <field name="kpi_progress_avg" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+</odoo>
