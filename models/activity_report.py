@@ -9,6 +9,14 @@ class ActivityWeeklyReport(models.Model):
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _order = "week_start desc"
 
+    kpi_progress_avg = fields.Float(
+        string="Taux moyen de réalisation",
+        compute="_compute_kpi_progress_avg",
+        store=True,
+        group_operator="avg"
+    )
+
+
     name = fields.Char(
         string="Référence",
         compute="_compute_name",
@@ -153,6 +161,14 @@ class ActivityWeeklyReport(models.Model):
             else:
                 rec.global_progress = 0.0
 
+    @api.depends("line_ids.progress")
+    def _compute_kpi_progress_avg(self):
+        for rec in self:
+            if rec.line_ids:
+                rec.kpi_progress_avg = sum(rec.line_ids.mapped("progress")) / len(rec.line_ids)
+            else:
+                rec.kpi_progress_avg = 0.0
+
     # --------------------
     # CONTRAINTES
     # --------------------
@@ -171,49 +187,149 @@ class ActivityWeeklyReport(models.Model):
 
     def action_submit(self):
         """Soumettre le rapport pour validation"""
+
         for rec in self:
-            # Validation : au moins une activité
+            # Vérification état
+            if rec.state != "draft":
+                continue
+
+            # Vérification période
+            if not rec.week_start or not rec.week_end:
+                raise UserError("La période du rapport est invalide.")
+            
+            # Vérification activités
             if not rec.line_ids:
                 raise UserError("Vous devez renseigner au moins une activité.")
-            
-            # Validation : vérifier que les activités sont dans la période
-            for line in rec.line_ids:
-                if line.date_start and (line.date_start < rec.week_start or line.date_start > rec.week_end):
-                    raise UserError(
-                        f"L'activité '{line.name}' a une date de début ({line.date_start}) "
-                        f"hors de la période du rapport ({rec.week_start} - {rec.week_end})."
-                    )
-            
-            # Changement d'état
-            rec.state = "submitted"
-            
-            # Message dans le chatter
-            rec.message_post(
-                body=f"Rapport soumis pour validation par {self.env.user.name}.",
-                subject="Rapport soumis"
-            )
+
+        
+        # Vérification cohérence dates
+        
+        for line in rec.line_ids:
+
+            if line.date_start and not (rec.week_start <= line.date_start <= rec.week_end):
+                raise UserError(
+                    f"L'activité '{line.name}' a une date de début ({line.date_start}) "
+                    f"hors de la période du rapport ({rec.week_start} - {rec.week_end})."
+                )
+
+            if line.date_end and not (rec.week_start <= line.date_end <= rec.week_end):
+                raise UserError(
+                    f"L'activité '{line.name}' a une date de fin ({line.date_end}) "
+                    f"hors de la période du rapport ({rec.week_start} - {rec.week_end})."
+                )
+
+        
+        # Passage à l'état soumis
+        rec.write({"state": "submitted"})
+
+        
+        # Envoi mail (si template existe)
+        template = self.env.ref(
+            "activity_weekly_report.mail_template_activity_report_submitted",
+            raise_if_not_found=False
+        )
+
+        if template:
+            template.send_mail(rec.id, force_send=True)
+
+        
+        # Message dans le chatter
+        rec.message_post(
+            body=f"Rapport soumis pour validation par {self.env.user.name}.",
+            subject="Rapport soumis"
+        )
+        
+        # Création activité DG si arbitrage requis
+        if rec.arbitration_required and rec.direction_id.manager_id.user_id:
+            dg_user = rec.direction_id.manager_id.user_id
+
+            # Vérifier qu'une activité similaire n'existe pas déjà
+            existing_activity = self.env["mail.activity"].search([
+                ("res_model", "=", "activity.weekly.report"),
+                ("res_id", "=", rec.id),
+                ("user_id", "=", dg_user.id),
+                ("summary", "=", "Arbitrage requis"),
+                ("state", "=", "planned"),
+            ], limit=1)
+
+            if not existing_activity:
+                self.env["mail.activity"].create({
+                    "activity_type_id": self.env.ref("mail.mail_activity_data_todo").id,
+                    "res_model_id": self.env["ir.model"]._get_id("activity.weekly.report"),
+                    "res_id": rec.id,
+                    "user_id": dg_user.id,
+                    "summary": "Arbitrage requis",
+                    "note": "Ce rapport nécessite une décision de votre part.",
+                    "date_deadline": fields.Date.today() + timedelta(days=2),
+                })
 
     def action_validate(self):
-        """Valider le rapport"""
+        # Valider le rapport
         for rec in self:
-            rec.state = "validated"
+            # Vérification état
+            if rec.state != "submitted":
+                continue
+
+            # Passage à l'état validé
+            rec.write({"state": "validated"})
+
+             # Message chatter
             rec.message_post(
                 body=f"Rapport validé par {self.env.user.name}.",
-                subject="Rapport validé",
-                message_type='notification'
+                subject="Rapport validé"
             )
+
+            # Envoi mail au responsable
+            template = self.env.ref(
+                "activity_weekly_report.mail_template_activity_report_validated",
+                raise_if_not_found=False
+            )
+            if template:
+                template.send_mail(rec.id, force_send=True)
+
+                # Clôture activité DG si existante
+                activities = self.env["mail.activity"].search([
+                    ("res_model", "=", "activity.weekly.report"),
+                    ("res_id", "=", rec.id),
+                    ("summary", "=", "Arbitrage requis"),
+                    ("state", "=", "planned"),
+                ])
+            for activity in activities:
+                activity.action_done()
 
     def action_reject(self):
         """Rejeter le rapport"""
         for rec in self:
-            rec.state = "rejected"
-            
-            reason = rec.rejection_reason or "Aucune raison spécifiée"
+            # Vérification état
+            if rec.state != "submitted":
+                continue
+
+            # Passage à l'état rejeté
+            rec.write({"state": "rejected"})
+
+            # Message chatter
             rec.message_post(
-                body=f"Rapport rejeté par {self.env.user.name}.<br/>Motif : {reason}",
-                subject="Rapport rejeté",
-                message_type='notification'
+                body=f"Rapport rejeté par {self.env.user.name}.",
+                subject="Rapport rejeté"
             )
+
+            # Envoi mail au responsable
+            template = self.env.ref(
+                "activity_weekly_report.mail_template_activity_report_rejected",
+                raise_if_not_found=False
+            )
+            if template:
+                template.send_mail(rec.id, force_send=True)
+
+            # Clôture activité DG si existante
+            activities = self.env["mail.activity"].search([
+                ("res_model", "=", "activity.weekly.report"),
+                ("res_id", "=", rec.id),
+                ("summary", "=", "Arbitrage requis"),
+                ("state", "=", "planned"),
+            ])
+            for activity in activities:
+                activity.action_done()
 
     def action_back_to_draft(self):
         """Repasser le rapport en brouillon après un rejet"""

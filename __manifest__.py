@@ -19,6 +19,7 @@
         
         # Vues
         "views/activity_report_views.xml",
+        "views/activity_report_dashboard.xml",
         "views/activity_report_menu.xml",
         "views/activity_report_line_views.xml",
         "wizards/activity_report_reject_wizard_views.xml",
@@ -27,7 +28,7 @@
         "security/ir.model.access.csv",
 
         # MAIL
-        # "data/mail_templates.xml",
+        "data/mail_templates.xml",
         # "data/cron_reminder.xml",
     ],
 

@@ -1,41 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- RAPPORT SOUMIS -->
     <record id="mail_template_activity_report_submitted" model="mail.template">
         <field name="name">Rapport d’activité – Soumis</field>
         <field name="model_id" ref="model_activity_weekly_report"/>
-        <field name="subject">
-            Rapport soumis – ${object.department_id.name}
-        </field>
-        <field name="email_from">
-            ${user.email or ''}
-        </field>
-        <field name="email_to">
-            ${object.direction_id.manager_id.user_id.email or ''}
-        </field>
-        <field name="body_html">
-            <![CDATA[
-            <p>Bonjour,</p>
-
-            <p>Le rapport d’activité hebdomadaire du service
-            <strong>${object.department_id.name}</strong>
-            a été soumis.</p>
-
-            <p>Semaine :
-            ${object.week_start} → ${object.week_end}</p>
-
-            <p>
-                <a href="${object.get_base_url()}/web#id=${object.id}&model=activity.weekly.report&view_type=form">
-                    Consulter le rapport
-                </a>
-            </p>
-
-            % if object.arbitration_required:
-                <p style="color:red;">
-                    ⚠️ Ce rapport nécessite un arbitrage DG.
+        <field name="subject">Rapport soumis – {{object.department_id.name}}</field>
+        <field name="email_from">{{user.email or ''}}</field>
+        <field name="email_to">{{object.direction_id.manager_id.user_id.email or ''}}</field>
+        <field name="body_html" ><![CDATA[
+            <div style="font-family: Arial, sans-serif; font-size: 14px;">
+                <p>Bonjour,</p>
+                <p>
+                    Le rapport d’activité hebdomadaire du service
+                    <strong><t t-out="object.department_id.name"/></strong>
+                    a été soumis.
                 </p>
-            % endif
+                <p>
+                    <strong>Période :</strong>
+                    <t t-out="object.week_start"/> →
+                    <t t-out="object.week_end"/>
+                </p>
+                <div style="margin:25px 0;">
+                    <a t-att-href="'%s/web#id=%s&model=activity.weekly.report&view_type=form' % (object.get_base_url(), object.id)"
+                       style="background-color:#875A7B;color:#fff;padding:12px 20px;text-decoration:none;border-radius:6px;font-weight:bold;display:inline-block;">
+                        Consulter le rapport
+                    </a>
+                </div>
+                <t t-if="object.arbitration_required">
+                    <p style="color:#d9534f;font-weight:bold;">
+                        ⚠️ Ce rapport nécessite un arbitrage DG.
+                    </p>
+                </t>
+                <p>Cordialement.</p>
+            </div>
+        ]]></field>
+    </record>
 
-            <p>Cordialement.</p>
-            ]]>
-        </field>
+    <!-- RAPPORT VALIDÉ -->
+    <record id="mail_template_activity_report_validated" model="mail.template">
+        <field name="name">Rapport d’activité – Validé</field>
+        <field name="model_id" ref="model_activity_weekly_report"/>
+        <field name="subject">Rapport validé – {{object.department_id.name}}</field>
+        <field name="email_from">{{user.email or ''}}</field>
+        <field name="email_to">{{object.user_id.email or ''}}</field>
+        <field name="body_html"><![CDATA[
+            <div style="font-family: Arial, sans-serif; font-size: 14px;">
+                <p>Bonjour <t t-out="object.user_id.name"/>,</p>
+                <p>
+                    Votre rapport du service
+                    <strong><t t-out="object.department_id.name"/></strong>
+                    pour la période
+                    <strong>
+                        <t t-out="object.week_start"/> →
+                        <t t-out="object.week_end"/>
+                    </strong>
+                    a été
+                    <strong style="color:#28a745;">validé</strong>.
+                </p>
+                <div style="margin:25px 0;">
+                    <a t-att-href="'%s/web#id=%s&model=activity.weekly.report&view_type=form' % (object.get_base_url(), object.id)"
+                       style="background-color:#28a745;color:#fff;padding:12px 20px;text-decoration:none;border-radius:6px;font-weight:bold;display:inline-block;">
+                        Consulter le rapport
+                    </a>
+                </div>
+                <p>Cordialement.</p>
+            </div>
+        ]]></field>
+    </record>
+
+    <!-- RAPPORT REJETÉ -->
+    <record id="mail_template_activity_report_rejected" model="mail.template">
+        <field name="name">Rapport d’activité – Rejeté</field>
+        <field name="model_id" ref="model_activity_weekly_report"/>
+        <field name="subject">Rapport rejeté – {{object.department_id.name}}</field>
+        <field name="email_from">{{user.email or ''}}</field>
+        <field name="email_to">{{object.user_id.email or ''}}</field>
+        <field name="body_html" ><![CDATA[
+            <div style="font-family: Arial, sans-serif; font-size: 14px;">
+                <p>Bonjour <t t-out="object.user_id.name"/>,</p>
+                <p>
+                    Votre rapport du service
+                    <strong><t t-out="object.department_id.name"/></strong>
+                    pour la période
+                    <strong>
+                        <t t-out="object.week_start"/> →
+                        <t t-out="object.week_end"/>
+                    </strong>
+                    a été
+                    <strong style="color:#dc3545;">rejeté</strong>.
+                </p>
+                <p>
+                    Merci de consulter les commentaires laissés dans le rapport
+                    et d’effectuer les corrections nécessaires.
+                </p>
+                <div style="margin:25px 0;">
+                    <a t-att-href="'%s/web#id=%s&model=activity.weekly.report&view_type=form' % (object.get_base_url(), object.id)"
+                       style="background-color:#dc3545;color:#fff;padding:12px 20px;text-decoration:none;border-radius:6px;font-weight:bold;display:inline-block;">
+                        Accéder au rapport
+                    </a>
+                </div>
+                <p>Cordialement.</p>
+            </div>
+        ]]></field>
     </record>
 </odoo>

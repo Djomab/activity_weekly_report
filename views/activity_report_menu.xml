@@ -36,7 +36,15 @@
               parent="menu_activity_root"
               action="action_direction_activity_reports"
               groups="activity_weekly_report.group_activity_report_manager"
-              sequence="20"/>
+              sequence="20"/>    
+              
+    <!-- Menu DG Arbitrage -->
+    <!--<menuitem id="menu_activity_report_arbitrage"
+        name="Arbitrages DG"
+        parent="menu_activity_root"
+        action="action_activity_report_arbitrage"
+        sequence="5"
+        groups="activity_weekly_report.group_activity_report_admin"/>-->
 
     <menuitem id="menu_all_reports"
               name="Tous les rapports"

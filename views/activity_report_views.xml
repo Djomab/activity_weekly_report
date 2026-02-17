@@ -33,8 +33,9 @@
                 <separator/>
                 
                 <!-- Filtres spéciaux -->
-                <filter string="Arbitrage DG requis" name="arbitration_required" 
-                        domain="[('arbitration_required','=',True)]"/>
+                <filter name="arbitrage"
+                    string="Arbitrage requis"
+                    domain="[('arbitration_required','=',True), ('state','=','submitted')]"/>
                 
                 <!-- Groupements -->
                 <group expand="0" string="Grouper par">
@@ -265,6 +266,18 @@
                     </t>
                 </templates>
             </kanban>
+        </field>
+    </record>
+
+    <record id="view_activity_report_pivot" model="ir.ui.view">
+        <field name="name">activity.weekly.report.pivot</field>
+        <field name="model">activity.weekly.report</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="department_id" type="row"/>
+                <field name="week_start" type="col"/>
+                <field name="id" type="measure"/>
+            </pivot>
         </field>
     </record>
 
