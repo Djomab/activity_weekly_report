@@ -61,7 +61,7 @@
                   decoration-success="state=='validated'" 
                   decoration-danger="state=='rejected'">
                 <field name="name"/>
-                <field name="department_id"/>
+                <field name="department_name"/>
                 <field name="direction_id"/>
                 <field name="week_start"/>
                 <field name="week_end"/>
@@ -169,6 +169,10 @@
                                     <field name="name" 
                                            required="1"
                                            readonly="parent.state not in ['draft','rejected']"/>
+
+                                    <field name="description"
+                                        readonly="parent.state not in ['draft','rejected']"/>
+
                                     <field name="date_start"
                                            readonly="parent.state not in ['draft','rejected']"/>
                                     <field name="date_end"
@@ -181,7 +185,6 @@
                                            widget="priority"
                                            readonly="parent.state not in ['draft','rejected']"/>
 
-                                    <!-- % RÉALISATION : Modifiable selon l'état du rapport -->
                                     <field name="progress" 
                                            string="% Réalisation"
                                            readonly="parent.state not in ['draft','rejected']"/>
@@ -276,9 +279,8 @@
             <pivot>
                 <field name="department_id" type="row"/>
                 <field name="week_start" type="col"/>
-                <field name="id" type="measure"/>
+                <!--<field name="id" type="measure"/>-->
             </pivot>
         </field>
     </record>
-
 </odoo>

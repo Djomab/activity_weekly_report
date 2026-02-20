@@ -30,6 +30,12 @@ class ActivityWeeklyReport(models.Model):
         tracking=True
     )
 
+    department_name = fields.Char(
+    string="Service",
+    related="department_id.name",
+    store=True
+    )
+
     direction_id = fields.Many2one(
         "hr.department",
         string="Direction",
@@ -88,9 +94,8 @@ class ActivityWeeklyReport(models.Model):
         string="Activités réalisées"
     )
 
-    blocking_points = fields.Text(
-        string="Points bloquants",
-        tracking=True
+    blocking_points = fields.Html(
+        string="Points bloquants"
     )
 
     arbitration_required = fields.Boolean(
@@ -98,9 +103,8 @@ class ActivityWeeklyReport(models.Model):
         tracking=True
     )
 
-    corrective_actions = fields.Text(
-        string="Actions correctives",
-        tracking=True
+    corrective_actions = fields.Html(
+        string="Actions correctives"
     )
 
     rejection_reason = fields.Text(

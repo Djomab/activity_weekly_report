@@ -19,6 +19,8 @@ class ActivityWeeklyReportLine(models.Model):
         required=True
     )
 
+    description = fields.Text(string="Description")
+
     date_start = fields.Date(
         string="Début"
     )
@@ -56,6 +58,21 @@ class ActivityWeeklyReportLine(models.Model):
     duration = fields.Float(
         string="Durée (jours)",
         compute="_compute_duration",
+        store=True
+    )
+
+    department_id = fields.Many2one(
+        related="report_id.department_id",
+        store=True
+    )
+
+    direction_id = fields.Many2one(
+        related="report_id.direction_id",
+        store=True
+    )
+
+    week_start = fields.Date(
+        related="report_id.week_start",
         store=True
     )
 
