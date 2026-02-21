@@ -13,7 +13,7 @@ class ActivityWeeklyReport(models.Model):
         string="Taux moyen de réalisation",
         compute="_compute_kpi_progress_avg",
         store=True,
-        group_operator="avg"
+        aggregator="avg"
     )
 
 
@@ -31,9 +31,9 @@ class ActivityWeeklyReport(models.Model):
     )
 
     department_name = fields.Char(
-    string="Service",
-    related="department_id.name",
-    store=True
+        string="Service",
+        related="department_id.name",
+        store=True
     )
 
     direction_id = fields.Many2one(

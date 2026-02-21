@@ -17,7 +17,6 @@ class ActivityReportRejectWizard(models.TransientModel):
     rejection_reason = fields.Text(
         string="Motif du rejet",
         required=True,
-        placeholder="Expliquez pourquoi ce rapport est rejeté..."
     )
 
     def action_confirm_reject(self):
